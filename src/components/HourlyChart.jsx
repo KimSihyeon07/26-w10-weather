@@ -2,9 +2,15 @@ import { Clock } from 'lucide-react'
 import WeatherIcon from './WeatherIcon'
 import { getWeatherInfo } from '../api/weather'
 
-export default function HourlyChart({ weatherData }) {
+export default function HourlyChart({ weatherData, tempUnit = 'C' }) {
   const hourly = weatherData?.hourly
   if (!hourly || !hourly.time || hourly.time.length === 0) return null
+
+  // 섭씨 ↔ 화씨 변환
+  const convertTemp = (celsius) => {
+    if (celsius == null) return 0
+    return tempUnit === 'F' ? Math.round((celsius * 9) / 5 + 32) : Math.round(celsius)
+  }
 
   // API 응답의 현재 관측 시각(current.time)을 기준으로 향후 24개 데이터 슬라이싱
   const currentHourPrefix = weatherData?.current?.time?.slice(0, 13)
@@ -17,7 +23,8 @@ export default function HourlyChart({ weatherData }) {
   }
 
   const times = hourly.time.slice(startIndex, startIndex + 24)
-  const temps = hourly.temperature_2m.slice(startIndex, startIndex + 24)
+  const rawTemps = hourly.temperature_2m.slice(startIndex, startIndex + 24)
+  const temps = rawTemps.map(convertTemp)
   const codes = hourly.weather_code.slice(startIndex, startIndex + 24)
 
   if (temps.length === 0) return null
@@ -54,7 +61,7 @@ export default function HourlyChart({ weatherData }) {
           <h2>24시간 기온 차트</h2>
         </div>
         <div className="hourly-temp-range">
-          최저 <strong className="temp-low">{Math.round(minTemp)}°</strong> / 최고 <strong className="temp-high">{Math.round(maxTemp)}°</strong>
+          최저 <strong className="temp-low">{minTemp}°{tempUnit}</strong> / 최고 <strong className="temp-high">{maxTemp}°{tempUnit}</strong>
         </div>
       </div>
 
@@ -104,7 +111,7 @@ export default function HourlyChart({ weatherData }) {
                   textAnchor="middle"
                   className="chart-temp-label"
                 >
-                  {Math.round(p.temp)}°
+                  {p.temp}°
                 </text>
               </g>
             ))}

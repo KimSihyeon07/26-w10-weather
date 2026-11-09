@@ -2,11 +2,20 @@ import { MapPin, Thermometer, Droplets, Wind } from 'lucide-react'
 import WeatherIcon from './WeatherIcon'
 import { getWeatherInfo } from '../api/weather'
 
-export default function CurrentWeather({ city, weatherData }) {
+export default function CurrentWeather({ city, weatherData, tempUnit = 'C' }) {
   const current = weatherData?.current
   if (!current) return null
 
   const weatherMeta = getWeatherInfo(current.weather_code)
+
+  // 섭씨 ↔ 화씨 변환
+  const convertTemp = (celsius) => {
+    if (celsius == null) return 0
+    return tempUnit === 'F' ? Math.round((celsius * 9) / 5 + 32) : Math.round(celsius)
+  }
+
+  const currentTemp = convertTemp(current.temperature_2m)
+  const apparentTemp = convertTemp(current.apparent_temperature)
 
   return (
     <section className="card weather-card">
@@ -38,8 +47,8 @@ export default function CurrentWeather({ city, weatherData }) {
           />
         </div>
         <div className="temp-display">
-          <span className="temp-value">{Math.round(current.temperature_2m)}</span>
-          <span className="temp-unit">°C</span>
+          <span className="temp-value">{currentTemp}</span>
+          <span className="temp-unit">°{tempUnit}</span>
         </div>
       </div>
 
@@ -48,7 +57,7 @@ export default function CurrentWeather({ city, weatherData }) {
           <Thermometer size={20} className="metric-icon metric-temp" />
           <div className="metric-info">
             <span className="metric-label">체감 온도</span>
-            <span className="metric-value">{Math.round(current.apparent_temperature)}°C</span>
+            <span className="metric-value">{apparentTemp}°{tempUnit}</span>
           </div>
         </div>
 

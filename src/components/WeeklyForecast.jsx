@@ -2,38 +2,46 @@ import { Calendar, Droplets } from 'lucide-react'
 import WeatherIcon from './WeatherIcon'
 import { getWeatherInfo } from '../api/weather'
 
-export default function WeeklyForecast({ weatherData }) {
+export default function WeeklyForecast({ weatherData, tempUnit = 'C' }) {
   const daily = weatherData?.daily
   if (!daily || !daily.time || daily.time.length === 0) return null
 
   const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토']
 
+  // 섭씨 ↔ 화씨 변환
+  const convertTemp = (celsius) => {
+    if (celsius == null) return 0
+    return tempUnit === 'F' ? Math.round((celsius * 9) / 5 + 32) : Math.round(celsius)
+  }
+
   // 7일 전체 중 최저 기온과 최고 기온 (게이지 막대 비율 계산용)
-  const allMins = daily.temperature_2m_min.slice(0, 7)
-  const allMaxs = daily.temperature_2m_max.slice(0, 7)
+  const allMins = daily.temperature_2m_min.slice(0, 7).map(convertTemp)
+  const allMaxs = daily.temperature_2m_max.slice(0, 7).map(convertTemp)
   const globalMin = Math.min(...allMins)
   const globalMax = Math.max(...allMaxs)
   const totalRange = globalMax === globalMin ? 1 : globalMax - globalMin
 
   const forecastDays = daily.time.slice(0, 7).map((dateStr, idx) => {
-    const dateObj = new Date(dateStr)
+    const dateParts = dateStr.split('-').map(Number)
+    // 타임존 이슈 없는 요일 계산
+    const dateObj = new Date(dateParts[0], dateParts[1] - 1, dateParts[2])
     const dayName = daysOfWeek[dateObj.getDay()]
-    const month = dateObj.getMonth() + 1
-    const date = dateObj.getDate()
+    const month = dateParts[1]
+    const date = dateParts[2]
 
     let displayDay = `${dayName}요일`
     if (idx === 0) displayDay = '오늘'
     else if (idx === 1) displayDay = '내일'
 
-    const min = Math.round(daily.temperature_2m_min[idx])
-    const max = Math.round(daily.temperature_2m_max[idx])
+    const min = allMins[idx]
+    const max = allMaxs[idx]
     const rainProb = daily.precipitation_probability_max ? daily.precipitation_probability_max[idx] : 0
     const code = daily.weather_code[idx]
     const weather = getWeatherInfo(code)
 
     // 게이지 바 시작 위치 및 너비 백분율
     const leftPercent = Math.max(0, ((min - globalMin) / totalRange) * 100)
-    const widthPercent = Math.max(10, ((max - min) / totalRange) * 100)
+    const widthPercent = Math.max(12, ((max - min) / totalRange) * 100)
 
     return {
       dateStr,
