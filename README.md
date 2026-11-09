@@ -74,5 +74,5 @@
 
 ## 🚀 실행 및 배포 링크
 
-- **Netlify 배포 URL**: `https://<사이트이름>.netlify.app` *(Netlify 배포 후 링크 입력)*
+- **Netlify 배포 URL**: https://graceful-haupia-dcf6ac.netlify.app (비밀번호: `My-Drop-Site`)
 - **GitHub Pages 배포 URL**: https://kimsihyeon07.github.io/26-w10-weather/
