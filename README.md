@@ -74,5 +74,5 @@
 
 ## 🚀 실행 및 배포 링크
 
-- **Netlify 배포 URL**: `https://<사이트이름>.netlify.app` *(배포 완료 후 업데이트)*
-- **GitHub Pages 배포 URL**: `https://<내아이디>.github.io/26-w10-weather/` *(배포 완료 후 업데이트)*
+- **Netlify 배포 URL**: `https://<사이트이름>.netlify.app` *(Netlify 배포 후 링크 입력)*
+- **GitHub Pages 배포 URL**: https://kimsihyeon07.github.io/26-w10-weather/
